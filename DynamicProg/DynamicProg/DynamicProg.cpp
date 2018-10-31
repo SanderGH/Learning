@@ -11,14 +11,227 @@
 #include <thread>
 #include <mutex>
 #include <future>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
 
 using namespace std;
 
+class Solution {
+public:
+
+	struct ListNode {
+		int val;
+		ListNode *next;
+		ListNode(int x) : val(x), next(NULL) {}
+	};
+
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2)
+	{
+		if (l1 == nullptr)
+			return l2;
+
+		if (l2 == nullptr)
+			return l1;
+
+		ListNode* result = new ListNode(0), *cur = result;
+		int carry = 0;
+		while( l1 != nullptr || l2 != nullptr )
+		{
+			int dig1 = l1 ? l1->val : 0;
+			int dig2 = l2 ? l2->val : 0;
+			int sum = dig1 + dig2 + carry;
+			carry = sum / 10;
+
+			cur->next = new ListNode( sum % 10);
+			cur = cur->next;
+			
+			if (l1 != nullptr)
+				l1 = l1->next;
+
+			if (l2 != nullptr)
+				l2 = l2->next;
+		}
+
+		if (carry)
+			cur->next = new ListNode(carry);
+
+		cur = result->next;
+		delete result;
+		return cur;
+	}
+
+	vector<int> twoSum(vector<int>& nums, int target) {
+
+		std::unordered_map<int, int> addit;
+		for (int i = 0; i < nums.size(); i++)
+		{
+			auto it = addit.find(target - nums[i]);
+			if (it != addit.end())
+				return { it->second, i };
+			addit.insert(make_pair(nums[i], i));
+		}
+		return {};
+	}
+
+	bool isPalindrome(int x) {
+		if (x < 0)
+			return false;
+
+		std::string s = std::to_string(x);
+		for (int begin = 0, end = s.length() - 1; begin <= end; begin++, end--)
+			if (s[begin] != s[end])
+				return false;
+		return true;
+	}
+
+	bool isPalindrome2(int x) {
+		if (x < 0)
+			return false;
+		
+	    vector<int> digs;
+		while (x >= 10)
+		{
+			digs.push_back(x % 10);
+			x = x / 10;
+		}
+		digs.push_back(x);
+
+		for (int begin = 0, end = digs.size() - 1; begin <= end; begin++, end--)
+			if (digs[begin] != digs[end])
+				return false;
+		return true;
+	}
+
+	bool isPalindrome3(int x) {
+		if (x < 0)
+			return false;
+
+		int del = x;
+		int result = 0, remind = 0;
+		while( del >= 10 )
+		{
+			remind = del % 10;
+			result = (result + remind) * 10;
+			del = del / 10;
+		}
+		result += del;
+		return result == x;
+	}
+
+	vector<int> plusOne(vector<int>& digits) {
+		vector<int> result(digits.begin(), digits.end());
+		
+		int carry = 1;
+		for (int i = digits.size() - 1; i >= 0; --i)
+		{
+			result[i]=( (digits[i] + carry) % 10);
+			carry = (digits[i] + carry) /10;
+		}
+
+		if (carry)
+			result.insert(result.begin(),carry);
+
+		return result;
+	}
+
+	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+		ListNode* result = new ListNode(0), *curr = result;
+
+		while(l1 && l2)
+		{
+			if (l1->val < l2->val)
+			{
+				curr->next = new ListNode(l1->val);
+				curr = curr->next;
+				l1 = l1->next;
+			}
+			else
+			{
+				curr->next = new ListNode(l2->val);
+				curr = curr->next;
+				l2 = l2->next;
+			}
+		}
+		
+		ListNode*  remind = l1 ? l1 : l2;
+		while (remind)
+		{
+			curr->next = new ListNode(remind->val);
+			curr = curr->next;
+			remind = remind->next;
+		}
+
+		curr = result->next;
+		delete result;
+		return curr;
+	}
+
+	int maxSubArray(vector<int>& nums) {
+		int prevSum = nums[0], maxSum = nums[0];
+		for (int i = 1; i < nums.size(); i++)
+		{
+			prevSum = max( nums[i], nums[i] + prevSum );
+			if (prevSum > maxSum)
+				maxSum = prevSum;
+		}
+
+		return maxSum;
+	}
+
+	vector<int> cachedSum;
+	
+	void NumArray(vector<int> nums) {
+		if (!nums.size())
+			return;
+		
+		cachedSum = vector<int>(nums.size());
+		cachedSum[0] = nums[0];
+		for (int i = 1; i < nums.size(); i++)
+			cachedSum[i] = cachedSum[i - 1] + nums[i];
+	}
+
+	int sumRange(int i, int j) {
+		if (!cachedSum.size())
+			return 0;
+		if (i == 0)
+			return cachedSum[j];
+		return cachedSum[j] - cachedSum[i - 1];
+	}
+	
+
+	int numJewelsInStones(string J, string S) {
+		int counter = 0;
+		unordered_set<char> jewels;
+		for_each(J.begin(), J.end(), [&](char ch) { jewels.insert(ch); });
+		for_each(S.begin(), S.end(), [&](char ch) {
+			if (jewels.find(ch) != jewels.end())
+				++counter;
+		});
+		return counter;
+	}
+
+	vector<string> subdomainVisits(vector<string>& cpdomains) {
+		vector<string> res;
+		unordered_map<string, int> counts;
+		for (auto cpdomain : cpdomains)
+		{
+			auto index = cpdomain.find(' ');
+			if (index != string::npos)
+			{
+				int count = std::stoi(cpdomain.substr(0, index));
+				string domains = cpdomain.substr(index + 1);
+
+			}
+		}
+		return res;
+	}
+};
 ////////////////////////////////////////////////////
 //     fibonachi
 long long FibonacciExp(int N)
 {
-	if( N < 0 ) 
+	if (N < 0)
 		return 0;
 	if (N <= 1)
 		return N;
@@ -40,13 +253,13 @@ long long CalcFibTD(size_t N)
 long long FibTD(size_t N)
 {
 	if (fibs.size() < N + 1)
-		fibs.resize(N+1, -1);
+		fibs.resize(N + 1, -1);
 	return CalcFibTD(N);
 }
 
 long long CalcFibDT(size_t N)
 {
-	vector<long long> v(N + 1,-1);
+	vector<long long> v(N + 1, -1);
 	v[0] = 0;
 	v[1] = 1;
 	for (int i = 2; i <= N; i++)
@@ -93,7 +306,7 @@ void Fibonacci()
 	std::cout << "Without additional memory - " << elapsed.count() << " ns\n";
 }
 template<class T>
-void Print(const string& title, const T& vec )
+void Print(const string& title, const T& vec)
 {
 	cout << title.c_str();
 	for (auto i : vec)
@@ -103,20 +316,20 @@ void Print(const string& title, const T& vec )
 
 void LISBottomUp(const vector<int>& seq)
 {
-	Print( "Sequensce    - ", seq);
-	vector<int> lenghts( seq.size(), 0);
+	Print("Sequensce    - ", seq);
+	vector<int> lenghts(seq.size(), 0);
 
-	for( int i = 0; i < seq.size(); i++)
+	for (int i = 0; i < seq.size(); i++)
 	{
 		int prev = 0;
-		for( int j = 0; j <= i-1; j++ )
+		for (int j = 0; j <= i - 1; j++)
 		{
 			if (seq[j] < seq[i] && lenghts[j] > prev)
 				prev = lenghts[j];
 		}
 		lenghts[i] = prev + 1;
 	}
-	Print( "Lenghts      - " , lenghts);
+	Print("Lenghts      - ", lenghts);
 
 	auto itMax = max_element(lenghts.begin(), lenghts.end());
 	auto maxLen = *itMax;
@@ -125,7 +338,7 @@ void LISBottomUp(const vector<int>& seq)
 	list<int> res;
 	res.push_front(seq[maxIndex]);
 
-	for (int prevIndex = maxIndex-1; prevIndex >= 0 && maxLen >= 1; prevIndex--)
+	for (int prevIndex = maxIndex - 1; prevIndex >= 0 && maxLen >= 1; prevIndex--)
 	{
 		if (lenghts[prevIndex] == lenghts[maxIndex] - 1 && seq[prevIndex] < seq[maxIndex])
 		{
@@ -139,12 +352,12 @@ void LISBottomUp(const vector<int>& seq)
 }
 
 /*
-Ребенок поднимается по лестнице из n ступенек. За один шаг он может переместиться на одну, две или три ступеньки. 
+Ребенок поднимается по лестнице из n ступенек. За один шаг он может переместиться на одну, две или три ступеньки.
 Реализуйте метод, рассчитывающий количество возможных вариантов перемещения ребенка по лестнице.
 */
-int GirlStairs( const int N)
+int GirlStairs(const int N)
 {
-	vector<int> stairs(N +1, 0);
+	vector<int> stairs(N + 1, 0);
 	stairs[0] = 1;
 	stairs[1] = 1;
 	stairs[2] = 2;
@@ -159,14 +372,14 @@ int GirlStairs( const int N)
 Определим «волшебный» индекс для массива A [ 0".n - 1 ] как индекс, для которого выполняется условие А[i] =i. Для заданного отсортированого массива,
 не содержащего одинаковых значений, напишите метод воиска «волшебного» индекса в массиве А (если он существует).
 */
-int MagicIndex( const vector<int>& vec )
+int MagicIndex(const vector<int>& vec)
 {
 	int begin = 0;
-	int end = vec.size()-1;
-	
+	int end = vec.size() - 1;
+
 	auto ggg = binary_search(vec.begin(), vec.end(), 9);
 
-	while (begin <= end )
+	while (begin <= end)
 	{
 		int mid = begin + (end - begin) / 2;
 		if (vec[mid] == mid)
@@ -237,16 +450,16 @@ char firstNotRepeatingCharacter(const std::string& s)
 	int min_indx = s.size();
 	for (size_t idx = 1; idx < counts.size(); ++idx)
 	{
-		if(counts[idx] == 1)
+		if (counts[idx] == 1)
 		{
-			if( firsts[idx] < min_indx )
+			if (firsts[idx] < min_indx)
 				min_indx = firsts[idx];
 		}
 	}
 
 	if (min_indx == s.size())
 		return '_';
-	else 
+	else
 		return s[min_indx];
 };
 
@@ -258,17 +471,17 @@ public:
 	MyTemp(Type i) : val(i) {};
 	Type get() { return val.get(); };
 };
-template MyTemp<int>;
+
 
 int main()
 {
 	MyTemp<int> ddd(4);
-	
+
 	constexpr auto ff = 10'000'000;
- 	mutex mtx;
-//	std::unique_lock<mutex> f( mtx,  );
+	mutex mtx;
+	//	std::unique_lock<mutex> f( mtx,  );
 	auto kk = firstNotRepeatingCharacter("abacabad");
-	auto x  { 1 };
+	auto x{ 1 };
 	std::vector<int> v1{ 5 };
 	std::vector<int> v2(5);
 	std::vector<int> v3({ 5 });
@@ -276,7 +489,7 @@ int main()
 	//std::vector<int> v5 = 5;
 
 	std::initializer_list<int> hhh{ 1,2,3,4,5,6 };
-	int * i = new int(5); 
+	int * i = new int(5);
 	cout << i << " " << endl;
 	i = nullptr;
 	delete i;
@@ -329,7 +542,39 @@ int main()
 
 	//vector<int> v{ 1,2,3,4,5 };
 	//for( auto& i: v )
+	int a = 11, b = 10;
+	int c = a % b, d = a / b;
+	Solution sol;
+	vector<int> in({ 1,3,5,6,9,7 });
+	auto indexes = sol.twoSum(in, 17);
+
+	bool poly = sol.isPalindrome3(-12);
+	poly = sol.isPalindrome3(10);
+	poly = sol.isPalindrome3(121);
+	poly = sol.isPalindrome3(1211);
+	poly = sol.isPalindrome3(1221);
+
 	
+	auto plus = sol.plusOne(vector<int>{1, 2, 3, 4});
+	plus = sol.plusOne(vector<int>{1, 2, 3, 9});
+	plus = sol.plusOne(vector<int>{1, 9, 9, 9});
+	plus = sol.plusOne(vector<int>{9, 9, 9, 9});
+	plus = sol.plusOne(vector<int>{0});
+
+	Solution::ListNode* l1 = new Solution::ListNode(1);
+	l1->next = new Solution::ListNode(2);
+
+	Solution::ListNode* l2 = new Solution::ListNode(1);
+	l2->next = new Solution::ListNode(3);
+
+	auto res = sol.mergeTwoLists( l1, l2);
+
+	sol.NumArray({});
+	auto sum=sol.sumRange(0, 2);
+
+	auto jewels = sol.numJewelsInStones("aA", "aAAAAA");
+	sol.subdomainVisits( vector<string>{ "900 google.mail.com", "50 yahoo.com", "1 intel.mail.com", "5 wiki.org" });
+
 	return 0;
 }
 

@@ -7,6 +7,7 @@
 #include <list>
 #include <set>
 #include <algorithm>
+#include <unordered_map>
 #include <memory>
 #include <thread>
 #include <mutex>
@@ -17,216 +18,6 @@
 
 using namespace std;
 
-class Solution {
-public:
-
-	struct ListNode {
-		int val;
-		ListNode *next;
-		ListNode(int x) : val(x), next(NULL) {}
-	};
-
-	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2)
-	{
-		if (l1 == nullptr)
-			return l2;
-
-		if (l2 == nullptr)
-			return l1;
-
-		ListNode* result = new ListNode(0), *cur = result;
-		int carry = 0;
-		while( l1 != nullptr || l2 != nullptr )
-		{
-			int dig1 = l1 ? l1->val : 0;
-			int dig2 = l2 ? l2->val : 0;
-			int sum = dig1 + dig2 + carry;
-			carry = sum / 10;
-
-			cur->next = new ListNode( sum % 10);
-			cur = cur->next;
-			
-			if (l1 != nullptr)
-				l1 = l1->next;
-
-			if (l2 != nullptr)
-				l2 = l2->next;
-		}
-
-		if (carry)
-			cur->next = new ListNode(carry);
-
-		cur = result->next;
-		delete result;
-		return cur;
-	}
-
-	vector<int> twoSum(vector<int>& nums, int target) {
-
-		std::unordered_map<int, int> addit;
-		for (int i = 0; i < nums.size(); i++)
-		{
-			auto it = addit.find(target - nums[i]);
-			if (it != addit.end())
-				return { it->second, i };
-			addit.insert(make_pair(nums[i], i));
-		}
-		return {};
-	}
-
-	bool isPalindrome(int x) {
-		if (x < 0)
-			return false;
-
-		std::string s = std::to_string(x);
-		for (int begin = 0, end = s.length() - 1; begin <= end; begin++, end--)
-			if (s[begin] != s[end])
-				return false;
-		return true;
-	}
-
-	bool isPalindrome2(int x) {
-		if (x < 0)
-			return false;
-		
-	    vector<int> digs;
-		while (x >= 10)
-		{
-			digs.push_back(x % 10);
-			x = x / 10;
-		}
-		digs.push_back(x);
-
-		for (int begin = 0, end = digs.size() - 1; begin <= end; begin++, end--)
-			if (digs[begin] != digs[end])
-				return false;
-		return true;
-	}
-
-	bool isPalindrome3(int x) {
-		if (x < 0)
-			return false;
-
-		int del = x;
-		int result = 0, remind = 0;
-		while( del >= 10 )
-		{
-			remind = del % 10;
-			result = (result + remind) * 10;
-			del = del / 10;
-		}
-		result += del;
-		return result == x;
-	}
-
-	vector<int> plusOne(vector<int>& digits) {
-		vector<int> result(digits.begin(), digits.end());
-		
-		int carry = 1;
-		for (int i = digits.size() - 1; i >= 0; --i)
-		{
-			result[i]=( (digits[i] + carry) % 10);
-			carry = (digits[i] + carry) /10;
-		}
-
-		if (carry)
-			result.insert(result.begin(),carry);
-
-		return result;
-	}
-
-	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
-		ListNode* result = new ListNode(0), *curr = result;
-
-		while(l1 && l2)
-		{
-			if (l1->val < l2->val)
-			{
-				curr->next = new ListNode(l1->val);
-				curr = curr->next;
-				l1 = l1->next;
-			}
-			else
-			{
-				curr->next = new ListNode(l2->val);
-				curr = curr->next;
-				l2 = l2->next;
-			}
-		}
-		
-		ListNode*  remind = l1 ? l1 : l2;
-		while (remind)
-		{
-			curr->next = new ListNode(remind->val);
-			curr = curr->next;
-			remind = remind->next;
-		}
-
-		curr = result->next;
-		delete result;
-		return curr;
-	}
-
-	int maxSubArray(vector<int>& nums) {
-		int prevSum = nums[0], maxSum = nums[0];
-		for (int i = 1; i < nums.size(); i++)
-		{
-			prevSum = max( nums[i], nums[i] + prevSum );
-			if (prevSum > maxSum)
-				maxSum = prevSum;
-		}
-
-		return maxSum;
-	}
-
-	vector<int> cachedSum;
-	
-	void NumArray(vector<int> nums) {
-		if (!nums.size())
-			return;
-		
-		cachedSum = vector<int>(nums.size());
-		cachedSum[0] = nums[0];
-		for (int i = 1; i < nums.size(); i++)
-			cachedSum[i] = cachedSum[i - 1] + nums[i];
-	}
-
-	int sumRange(int i, int j) {
-		if (!cachedSum.size())
-			return 0;
-		if (i == 0)
-			return cachedSum[j];
-		return cachedSum[j] - cachedSum[i - 1];
-	}
-	
-
-	int numJewelsInStones(string J, string S) {
-		int counter = 0;
-		unordered_set<char> jewels;
-		for_each(J.begin(), J.end(), [&](char ch) { jewels.insert(ch); });
-		for_each(S.begin(), S.end(), [&](char ch) {
-			if (jewels.find(ch) != jewels.end())
-				++counter;
-		});
-		return counter;
-	}
-
-	vector<string> subdomainVisits(vector<string>& cpdomains) {
-		vector<string> res;
-		unordered_map<string, int> counts;
-		for (auto cpdomain : cpdomains)
-		{
-			auto index = cpdomain.find(' ');
-			if (index != string::npos)
-			{
-				int count = std::stoi(cpdomain.substr(0, index));
-				string domains = cpdomain.substr(index + 1);
-
-			}
-		}
-		return res;
-	}
-};
 ////////////////////////////////////////////////////
 //     fibonachi
 long long FibonacciExp(int N)
@@ -393,47 +184,6 @@ int MagicIndex(const vector<int>& vec)
 }
 
 
-//class MyClass
-//{
-//	string m_name;
-//public:
-//	 MyClass(const string& name): m_name(name) {};
-//	 get_name()
-//};
-
-//template <class T>
-//void f(T* t)
-//{
-//}
-//
-//template <class T>
-//void g(T t)
-//{
-//	f(t);
-//}
-class A
-{
-	int i;
-public:
-};
-
-class B
-{
-	int i;
-public:
-};
-
-void f(int)
-{
-}
-
-void f(A*)
-{
-}
-
-void f(B*)
-{
-}
 
 char firstNotRepeatingCharacter(const std::string& s)
 {
@@ -463,19 +213,302 @@ char firstNotRepeatingCharacter(const std::string& s)
 		return s[min_indx];
 };
 
-template <class Type>
-class MyTemp
-{
-	Type val;
-public:
-	MyTemp(Type i) : val(i) {};
-	Type get() { return val.get(); };
-};
 
+class Solution {
+public:
+
+	struct ListNode {
+		int val;
+		ListNode *next;
+		ListNode(int x) : val(x), next(NULL) {}
+	};
+
+	ListNode* addTwoNumbers(ListNode* l1, ListNode* l2)
+	{
+		if (l1 == nullptr)
+			return l2;
+
+		if (l2 == nullptr)
+			return l1;
+
+		ListNode* result = new ListNode(0), *cur = result;
+		int carry = 0;
+		while (l1 != nullptr || l2 != nullptr)
+		{
+			int dig1 = l1 ? l1->val : 0;
+			int dig2 = l2 ? l2->val : 0;
+			int sum = dig1 + dig2 + carry;
+			carry = sum / 10;
+
+			cur->next = new ListNode(sum % 10);
+			cur = cur->next;
+
+			if (l1 != nullptr)
+				l1 = l1->next;
+
+			if (l2 != nullptr)
+				l2 = l2->next;
+		}
+
+		if (carry)
+			cur->next = new ListNode(carry);
+
+		cur = result->next;
+		delete result;
+		return cur;
+	}
+
+	vector<int> twoSum(vector<int>& nums, int target) {
+
+		std::unordered_map<int, int> addit;
+		for (int i = 0; i < nums.size(); i++)
+		{
+			auto it = addit.find(target - nums[i]);
+			if (it != addit.end())
+				return { it->second, i };
+			addit.insert(make_pair(nums[i], i));
+		}
+		return {};
+	}
+
+	bool isPalindrome(int x) {
+		if (x < 0)
+			return false;
+
+		std::string s = std::to_string(x);
+		for (int begin = 0, end = s.length() - 1; begin <= end; begin++, end--)
+			if (s[begin] != s[end])
+				return false;
+		return true;
+	}
+
+	bool isPalindrome2(int x) {
+		if (x < 0)
+			return false;
+
+		vector<int> digs;
+		while (x >= 10)
+		{
+			digs.push_back(x % 10);
+			x = x / 10;
+		}
+		digs.push_back(x);
+
+		for (int begin = 0, end = digs.size() - 1; begin <= end; begin++, end--)
+			if (digs[begin] != digs[end])
+				return false;
+		return true;
+	}
+
+	bool isPalindrome3(int x) {
+		if (x < 0)
+			return false;
+
+		int del = x;
+		int result = 0, remind = 0;
+		while (del >= 10)
+		{
+			remind = del % 10;
+			result = (result + remind) * 10;
+			del = del / 10;
+		}
+		result += del;
+		return result == x;
+	}
+
+	vector<int> plusOne(vector<int>& digits) {
+		vector<int> result(digits.begin(), digits.end());
+
+		int carry = 1;
+		for (int i = digits.size() - 1; i >= 0; --i)
+		{
+			result[i] = ((digits[i] + carry) % 10);
+			carry = (digits[i] + carry) / 10;
+		}
+
+		if (carry)
+			result.insert(result.begin(), carry);
+
+		return result;
+	}
+
+	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+		ListNode* result = new ListNode(0), *curr = result;
+
+		while (l1 && l2)
+		{
+			if (l1->val < l2->val)
+			{
+				curr->next = new ListNode(l1->val);
+				curr = curr->next;
+				l1 = l1->next;
+			}
+			else
+			{
+				curr->next = new ListNode(l2->val);
+				curr = curr->next;
+				l2 = l2->next;
+			}
+		}
+
+		ListNode*  remind = l1 ? l1 : l2;
+		while (remind)
+		{
+			curr->next = new ListNode(remind->val);
+			curr = curr->next;
+			remind = remind->next;
+		}
+
+		curr = result->next;
+		delete result;
+		return curr;
+	}
+
+	int maxSubArray(vector<int>& nums) {
+		int prevSum = nums[0], maxSum = nums[0];
+		for (int i = 1; i < nums.size(); i++)
+		{
+			prevSum = max(nums[i], nums[i] + prevSum);
+			if (prevSum > maxSum)
+				maxSum = prevSum;
+		}
+
+		return maxSum;
+	}
+
+	vector<int> cachedSum;
+
+	void NumArray(vector<int> nums) {
+		if (!nums.size())
+			return;
+
+		cachedSum = vector<int>(nums.size());
+		cachedSum[0] = nums[0];
+		for (int i = 1; i < nums.size(); i++)
+			cachedSum[i] = cachedSum[i - 1] + nums[i];
+	}
+
+	int sumRange(int i, int j) {
+		if (!cachedSum.size())
+			return 0;
+		if (i == 0)
+			return cachedSum[j];
+		return cachedSum[j] - cachedSum[i - 1];
+	}
+
+
+	int numJewelsInStones(string J, string S) {
+		int counter = 0;
+		unordered_set<char> jewels;
+		for_each(J.begin(), J.end(), [&](char ch) { jewels.insert(ch); });
+		for_each(S.begin(), S.end(), [&](char ch) {
+			if (jewels.find(ch) != jewels.end())
+				++counter;
+		});
+		return counter;
+	}
+
+	vector<string> subdomainVisits(vector<string>& cpdomains) {
+		vector<string> res;
+		unordered_map<string, int> counts;
+		for (auto cpdomain : cpdomains)
+		{
+			auto index = cpdomain.find(' ');
+			if (index != string::npos)
+			{
+				int count = std::stoi(cpdomain.substr(0, index));
+				string domains = cpdomain.substr(index + 1);
+
+			}
+		}
+		return res;
+	}
+
+	int removeElement(vector<int>& nums, int val) {
+		auto newEnd = std::remove(nums.begin(), nums.end(), val);
+		return std::distance(nums.begin(), newEnd);
+	}
+
+	int searchInsert(vector<int>& nums, int target) {
+		if (nums[0] >= target)
+			return 0;
+
+		if (nums[nums.size() - 1] < target)
+			return nums.size();
+
+		if (nums[nums.size() - 1] == target)
+			return nums.size() - 1;
+
+		for (int i = 0; i < nums.size() - 1; i++)
+		{
+			if (nums[i] == target)
+				return i;
+			if (nums[i] < target && nums[i + 1] > target)
+				return i + 1;
+		}
+	}
+
+	int lengthOfLastWord(string s) {
+		if (s.empty())
+			return 0;
+		auto index = s.rfind(' ');
+		return index == string::npos ? s.length() : s.length() - index - 1;
+	}
+
+	int findComplement(int num) {
+		int count = 1, tmp = num;
+		while (tmp = tmp >> 1)
+			++count;
+
+		int mask = 1;
+		while (--count)
+			mask = (mask << 1) + 1;
+
+		return (~num)&mask;
+	}
+
+	char findTheDifference(string s, string t) {
+		/*unordered_map<char, int> counts;
+		for (auto i : t)
+		{
+			auto find = counts.find(i);
+			if (find != counts.end())
+				++find->second;
+			else
+				counts.insert(make_pair( i, 1));
+		}
+
+		for (auto i : s)
+		{
+			auto find = counts.find(i);
+			if (find != counts.end())
+				if (find->second == 1)
+					counts.erase(i);
+				else
+					--find->second;
+		}
+
+		return counts.begin()->first;*/
+
+		char r = 0;
+		for (char c : s)
+			r ^= c;
+		for (char c : t)
+			r ^= c;
+		return r;
+	}
+};
 
 int main()
 {
-	MyTemp<int> ddd(4);
+	Solution sol;
+	sol.findComplement(5);
+	auto dif = sol.findTheDifference("aaabcd", "abacade");
+
+	vector<int> remov{ 0,1,2,2,3,0,4,2 };
+	auto count = sol.removeElement(remov, 2);
+	vector<int> vInsert{ 1,3,5,6 };
+	auto index = sol.searchInsert(vInsert, 5);
 
 	constexpr auto ff = 10'000'000;
 	mutex mtx;
@@ -542,9 +575,6 @@ int main()
 
 	//vector<int> v{ 1,2,3,4,5 };
 	//for( auto& i: v )
-	int a = 11, b = 10;
-	int c = a % b, d = a / b;
-	Solution sol;
 	vector<int> in({ 1,3,5,6,9,7 });
 	auto indexes = sol.twoSum(in, 17);
 
@@ -554,7 +584,7 @@ int main()
 	poly = sol.isPalindrome3(1211);
 	poly = sol.isPalindrome3(1221);
 
-	
+
 	auto plus = sol.plusOne(vector<int>{1, 2, 3, 4});
 	plus = sol.plusOne(vector<int>{1, 2, 3, 9});
 	plus = sol.plusOne(vector<int>{1, 9, 9, 9});
@@ -567,13 +597,13 @@ int main()
 	Solution::ListNode* l2 = new Solution::ListNode(1);
 	l2->next = new Solution::ListNode(3);
 
-	auto res = sol.mergeTwoLists( l1, l2);
+	auto res = sol.mergeTwoLists(l1, l2);
 
 	sol.NumArray({});
-	auto sum=sol.sumRange(0, 2);
+	auto sum = sol.sumRange(0, 2);
 
 	auto jewels = sol.numJewelsInStones("aA", "aAAAAA");
-	sol.subdomainVisits( vector<string>{ "900 google.mail.com", "50 yahoo.com", "1 intel.mail.com", "5 wiki.org" });
+	sol.subdomainVisits(vector<string>{ "900 google.mail.com", "50 yahoo.com", "1 intel.mail.com", "5 wiki.org" });
 
 	return 0;
 }
